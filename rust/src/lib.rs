@@ -1,3 +1,5 @@
+#![feature(extend_one)]
+
 use godot::prelude::*;
 
 struct MyExtension;
@@ -6,3 +8,4 @@ struct MyExtension;
 unsafe impl ExtensionLibrary for MyExtension {}
 
 mod player;
+mod wheel;
