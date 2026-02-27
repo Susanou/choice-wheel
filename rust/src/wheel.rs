@@ -1,3 +1,11 @@
+use std::default;
+
+use godot::classes::Font;
+use godot::classes::Theme;
+use godot::classes::ThemeDb;
+use godot::classes::flow_container;
+use godot::global::HorizontalAlignment;
+use godot::meta::ref_to_arg;
 use godot::prelude::*;
 use godot::prelude::Node2D;
 use godot::prelude::INode2D;
@@ -8,6 +16,9 @@ use godot::prelude::GodotClass;
 struct Wheel {
     speed: f64,
     angular_speed: f64,
+    mouth_width: f32,
+    mouth: Option<PackedArray<Vector2>>,
+    head: Option<PackedArray<Vector2>>,
 
     base: Base<Node2D>
 }
@@ -26,22 +37,68 @@ const COORDS_HEAD: [[f64; 2]; 22] = [
     [ 17.262, 47.082 ],  [ 22.973, 55.237 ]
 ];
 
+const COORDS_MOUTH: [[f64;2]; 10] = [
+    [ 22.817, 81.100 ], [ 38.522, 82.740 ],
+	[ 39.001, 90.887 ], [ 54.465, 92.204 ],
+	[ 55.641, 84.260 ], [ 72.418, 84.177 ],
+	[ 73.629, 92.158 ], [ 88.895, 90.923 ],
+	[ 89.556, 82.673 ], [ 105.005, 81.100 ]
+];
+
 #[godot_api]
 impl INode2D for Wheel {
+
     fn init(base: Base<Node2D>) -> Self {
         godot_print!("Hello, world!"); // Prints to the Godot console
 
         Self {
             speed: 400.0,
             angular_speed: std::f64::consts::PI,
+            mouth_width: 4.4,
+            mouth: Some(float_array_to_vector2_array(&COORDS_HEAD)),
+            head: Some(float_array_to_vector2_array(&COORDS_MOUTH)),
             base,
         }
     }
 
+    fn ready(&mut self) {
+        self.head = Some(float_array_to_vector2_array(&COORDS_HEAD));
+        self.mouth = Some(float_array_to_vector2_array(&COORDS_MOUTH));
+    }
+
     fn draw(&mut self) {
-        let points = float_array_to_vector2_array(&COORDS_HEAD);
-        let godot_blue = Color::from_string("478cbf");
-    self.base_mut().draw_colored_polygon(&points, godot_blue.expect("hardcoded color"));
+        let godot_blue = Color::from_string("478cbf").expect("hardcoded color");
+        let white = Color::WHITE;
+        let grey = Color::from_string("414042").expect("hardcoded color");
+
+        let default_font = ThemeDb::singleton().get_fallback_font();
+
+        let head = self.head.as_ref().unwrap().clone();
+        let mouth = self.mouth.as_ref().unwrap().clone();
+        let width = self.mouth_width;
+
+        self.base_mut().draw_colored_polygon(&head, godot_blue);
+        self.base_mut().draw_polyline_ex(&mouth, white)
+            .width(width)
+            .done();
+
+        //Four circles for the 2 eyes: 2 white, 2 grey.
+        self.base_mut().draw_circle(Vector2{x: 42.479, y: 65.4825}, 9.3905, white);
+        self.base_mut().draw_circle(Vector2{x: 85.524, y: 65.4825}, 9.3905, white);
+        self.base_mut().draw_circle(Vector2{x: 43.423, y: 65.92}, 6.246, grey);
+        self.base_mut().draw_circle(Vector2{x: 84.626, y: 66.008}, 6.246, grey);
+
+        // draw a short but thick vertical line for the nose
+        self.base_mut().draw_line_ex(Vector2 { x: 64.273, y: 60.564 }, Vector2 { x: 64.273, y: 74.349 }, white)
+            .width(5.8)
+            .done();
+
+        // GODOT text below the logo
+        self.base_mut().draw_string_ex(ref_to_arg(&default_font), Vector2 { x: 20.0, y: 130.0 }, "GODOT")
+            .alignment(HorizontalAlignment::CENTER)
+            .font_size(22)
+            .width(90.0)
+            .done();
     }
 }
 
