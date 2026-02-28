@@ -1,9 +1,4 @@
-use std::default;
-
-use godot::classes::Font;
-use godot::classes::Theme;
 use godot::classes::ThemeDb;
-use godot::classes::flow_container;
 use godot::global::HorizontalAlignment;
 use godot::meta::ref_to_arg;
 use godot::prelude::*;
@@ -14,12 +9,14 @@ use godot::prelude::GodotClass;
 #[derive(GodotClass)]
 #[class(base=Node2D, tool)]
 struct Wheel {
-    speed: f64,
+    time: f32,
+    #[export]
     angular_speed: f64,
     mouth_width: f32,
+    #[export]
+    max_width: f32,
     mouth: Option<PackedArray<Vector2>>,
     head: Option<PackedArray<Vector2>>,
-
     base: Base<Node2D>
 }
 
@@ -52,9 +49,10 @@ impl INode2D for Wheel {
         godot_print!("Hello, world!"); // Prints to the Godot console
 
         Self {
-            speed: 400.0,
+            time: 0.0,
             angular_speed: std::f64::consts::PI,
             mouth_width: 4.4,
+            max_width: 7.0,
             mouth: Some(float_array_to_vector2_array(&COORDS_HEAD)),
             head: Some(float_array_to_vector2_array(&COORDS_MOUTH)),
             base,
@@ -64,9 +62,13 @@ impl INode2D for Wheel {
     fn ready(&mut self) {
         self.head = Some(float_array_to_vector2_array(&COORDS_HEAD));
         self.mouth = Some(float_array_to_vector2_array(&COORDS_MOUTH));
+        self.base_mut().set_rotation(0.0);
+        self.base_mut().set_position(Vector2{x: 60.0, y: 60.0});
     }
 
     fn draw(&mut self) {
+        self.base_mut().draw_set_transform(Vector2 { x: -60.0, y: -60.0 });
+
         let godot_blue = Color::from_string("478cbf").expect("hardcoded color");
         let white = Color::WHITE;
         let grey = Color::from_string("414042").expect("hardcoded color");
@@ -98,7 +100,14 @@ impl INode2D for Wheel {
             .alignment(HorizontalAlignment::CENTER)
             .font_size(22)
             .width(90.0)
-            .done();
+            .done();        
+    }
+    
+    fn process(&mut self, delta: f64) {
+        //activate_rotation(self, delta);
+        self.time += delta as f32;
+        self.mouth_width = f32::abs(f32::sin(self.time) * self.max_width);
+        self.base_mut().queue_redraw();
     }
 }
 
@@ -109,4 +118,10 @@ fn float_array_to_vector2_array(coords: &[[f64;2]]) -> PackedVector2Array {
     }
 
     return array;
+}
+
+fn activate_rotation(wheel: &mut Wheel, delta: f64) {
+    let radians = (wheel.angular_speed * delta) as f32;
+    let rotation = wheel.base().get_rotation();
+    wheel.base_mut().set_rotation(rotation - radians);
 }
