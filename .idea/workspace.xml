@@ -12,19 +12,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3206555c-7d37-4738-81b4-e3302acb5bf2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/choice-wheel.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/material_theme_project_new.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/icon.svg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/icon.svg.import" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/project.godot" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/rust/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/rust/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/src/SelectionWheel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/selection_wheel.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rust/src/drawingTest.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/drawing_test.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rust/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/src/player.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/player.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +53,7 @@
     &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
@@ -114,6 +105,10 @@
       <option name="presentableId" value="Default" />
       <updated>1771577097595</updated>
       <workItem from="1771577098629" duration="6193000" />
+      <workItem from="1771658931184" duration="37000" />
+      <workItem from="1771698059120" duration="620000" />
+      <workItem from="1771922872912" duration="709000" />
+      <workItem from="1772783289065" duration="354000" />
     </task>
     <servers />
   </component>

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://6s1ah3qulxeu"]
+
+[node name="ChoiceWheel" type="Control" unique_id=2090212538]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Wheel" type="Wheel" parent="." unique_id=1057425821]
+bg_color = Color(0.16206557, 0.1620656, 0.16206557, 1)
+inner_radius = 92
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0

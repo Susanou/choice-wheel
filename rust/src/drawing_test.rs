@@ -8,7 +8,7 @@ use godot::prelude::GodotClass;
 
 #[derive(GodotClass)]
 #[class(base=Node2D, tool)]
-struct Wheel {
+struct DrawTest {
     time: f32,
     #[export]
     angular_speed: f64,
@@ -43,7 +43,7 @@ const COORDS_MOUTH: [[f64;2]; 10] = [
 ];
 
 #[godot_api]
-impl INode2D for Wheel {
+impl INode2D for DrawTest {
 
     fn init(base: Base<Node2D>) -> Self {
         godot_print!("Hello, world!"); // Prints to the Godot console
@@ -120,7 +120,7 @@ fn float_array_to_vector2_array(coords: &[[f64;2]]) -> PackedVector2Array {
     return array;
 }
 
-fn activate_rotation(wheel: &mut Wheel, delta: f64) {
+fn activate_rotation(wheel: &mut DrawTest, delta: f64) {
     let radians = (wheel.angular_speed * delta) as f32;
     let rotation = wheel.base().get_rotation();
     wheel.base_mut().set_rotation(rotation - radians);

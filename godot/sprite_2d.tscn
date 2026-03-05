@@ -1,4 +1,4 @@
 [gd_scene format=3 uid="uid://2xj5ooy0mtrt"]
 
-[node name="Wheel" type="Wheel" unique_id=1477540581]
+[node name="DrawTest" type="DrawTest" unique_id=1039406902]
 position = Vector2(60, 60)
