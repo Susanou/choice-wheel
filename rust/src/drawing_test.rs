@@ -104,7 +104,7 @@ impl INode2D for DrawTest {
     }
     
     fn process(&mut self, delta: f64) {
-        //activate_rotation(self, delta);
+        activate_rotation(self, delta);
         self.time += delta as f32;
         self.mouth_width = f32::abs(f32::sin(self.time) * self.max_width);
         self.base_mut().queue_redraw();

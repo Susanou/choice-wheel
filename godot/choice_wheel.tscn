@@ -9,11 +9,32 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-metadata/_edit_use_anchors_ = true
 
 [node name="Wheel" type="Wheel" parent="." unique_id=1057425821]
-bg_color = Color(0.16206557, 0.1620656, 0.16206557, 1)
+bg_color = Color(0.17641926, 0.17641905, 0.17641908, 1)
 inner_radius = 92
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+options = Array[String](["test", "dwadwadwa", "dwadwadwa", "dawdwadw"])
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Choice" type="Label" parent="Wheel" unique_id=1738019140]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -11.5
+offset_right = 26.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Choice"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
