@@ -1,11 +1,12 @@
-use godot::builtin::{Array, Color, GString, StringName, Vector2};
+use godot::builtin::{Array, Callable, Color, GString, StringName, Vector2};
 use godot::classes::control::LayoutPreset;
-use godot::classes::{Control, IControl, Label, Node2D, ThemeDb};
+use godot::classes::{Control, IControl, ILabel, Label, Node2D, ThemeDb};
 use godot::global::HorizontalAlignment;
 use godot::meta::ref_to_arg;
-use godot::obj::{Base, Gd, Singleton, WithBaseField};
+use godot::obj::{Base, Gd, Singleton, WithBaseField, WithUserSignals};
 use godot::prelude::{godot_api, GodotClass, Node};
 use std::f32::consts::TAU;
+use godot::classes::class_macros::inherit_from_GpuParticlesAttractorVectorField3D__ensure_class_exists;
 
 const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 
@@ -13,6 +14,8 @@ const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 #[class(base=Control, tool)]
 pub struct Wheel {
     base: Base<Control>,
+    #[export]
+    is_spin: bool,
 
     #[export]
     bg_color: Color,
@@ -28,7 +31,15 @@ pub struct Wheel {
     inner_radius: i64,
 
     #[export]
-    options: Array<GString>
+    options: Array<GString>,
+
+    items: Vec<Item>
+}
+
+struct Item {
+    name: String,
+    from: f32,
+    to: f32,
 }
 
 #[godot_api]
@@ -36,12 +47,14 @@ impl IControl for Wheel {
     fn init(base: Base<Control>) -> Self {
         Self {
             base,
+            is_spin: false,
             bg_color: Color::BLACK,
             line_color: Color::WHITE,
             line_width: 4,
             outer_radius: 256,
             inner_radius: 64,
             options: Array::new(),
+            items: Vec::new(),
         }
     }
 
@@ -84,8 +97,36 @@ impl IControl for Wheel {
     }
 }
 
+#[godot_api]
 impl Wheel {
+
+    #[signal]
+    fn chosen(choice: String);
+
+    fn on_btn_spin_wheel(&mut self){
+        if !self.is_spin {
+            self.is_spin = true;
+            let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(true).done();
+            tween.connect(
+                "finished".into(),	// boilerplate
+                          &Callable::from_fn(
+                              "finished",	// boilerplate
+                              |_| {
+                                  let mut old_rotation = self.base_mut().get_node_as::<Node2D>("%front").get_rotation_degrees();
+                                  self.is_spin = false;
+
+                                  if old_rotation > 360.0{
+                                      let deg = old_rotation % 360.0;
+                                      self.base_mut().get_node_as::<Node2D>("%front").set_rotation_degrees(deg);
+                                  }
+                              },
+                          ));
+        }
+    }
+
     fn setup_labels(&mut self) {
+        self.items.clear();
+
         let outer_radius = self.outer_radius as f32;
         let bg_color = self.bg_color;
         let inner_radius = self.inner_radius as f32;
@@ -108,6 +149,13 @@ impl Wheel {
 
             let start_rads = i as f32 / self.options.len() as f32 * TAU;
             let end_rads = (i + 1) as f32 / self.options.len() as f32 * TAU;
+
+            self.items.push(Item{
+                name: name.to_string(),
+                from: start_rads,
+                to: end_rads,
+            });
+
             let mid_rads = (start_rads + end_rads) / 2.0 * -1.0;
             let radius_mid = (inner_radius + outer_radius) / 2.0;
 

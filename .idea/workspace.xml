@@ -11,14 +11,7 @@
     </cargoProject>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3206555c-7d37-4738-81b4-e3302acb5bf2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/godot/choice_wheel.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/godot/choice_wheel.tscn" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/src/drawing_test.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/drawing_test.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/src/selection_wheel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/selection_wheel.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rust/src/ui.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/ui.rs" afterDir="false" />
-    </list>
+    <list default="true" id="3206555c-7d37-4738-81b4-e3302acb5bf2" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -113,7 +106,7 @@
       <workItem from="1771922872912" duration="709000" />
       <workItem from="1772783289065" duration="354000" />
       <workItem from="1772870460813" duration="11080000" />
-      <workItem from="1772900896180" duration="2032000" />
+      <workItem from="1772900896180" duration="2809000" />
     </task>
     <servers />
   </component>

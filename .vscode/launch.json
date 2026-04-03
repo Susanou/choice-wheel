@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Debug Project (Godot 4)",
+            "type": "lldb", // type provided by CodeLLDB extension
+            "request": "launch",
+            "cwd": "${workspaceFolder}/godot",
+            "preLaunchTask": "build-rust",
+            "args": [
+                "-w" // windowed mode
+                // "-e": editor does not keep breakpoints; thus not listed here.
+            ],
+            "program": "C:\\Users\\camer\\scoop\\apps\\godot\\current\\godot.exe"
+        }
+    ]
+}
