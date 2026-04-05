@@ -8,6 +8,7 @@ use godot::prelude::{godot_api, GodotClass, Node, OnReady, Variant};
 use rand::{random, RngExt};
 use std::any::{type_name, Any};
 use std::f32::consts::TAU;
+use std::fs;
 
 const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 
@@ -52,43 +53,29 @@ impl Wheel {
     fn wheel_end_spin(choice: String);
 
     #[func]
+    fn load_file(&mut self, path: String){
+        let file = fs::File::open(path).expect("file should open read only");
+        let json: serde_json::Value = serde_json::from_reader(file)
+            .expect("file should be proper JSON");
+
+
+    }
+
+    #[func]
     fn on_btn_spin_wheel(&mut self){
         if !self.is_spin {
             self.is_spin = true;
+
             let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(true).done();
-            let mut front_node = self.to_gd();
-
-            tween.connect(
-                "finished",	// boilerplate
-                &Callable::from_fn(
-                    "finished",	// boilerplate
-                    move |_| {
-                        let old_rotation = front_node.get_rotation_degrees();
-
-                        if old_rotation > 360.0{
-                            let deg = old_rotation % 360.0;
-                            front_node.set_rotation_degrees(deg);
-                        }
-                    },
-                ));
 
             let mut rng = rand::rng();
             let reward_pos = rng.random_range(0..360);
-            let mut chosen_item: i32 = -1;
 
-            self.items.iter().enumerate().for_each(|(i, item)| {
-                if reward_pos as f32 >= item.from && reward_pos as f32 <= item.to {
-                    godot_print!("{} ", item.name);
-                    chosen_item = i as i32;
-                }
-            });
 
-            if chosen_item < 0 {
-                panic!();
-            } else {
-                let reward = self.items.get(chosen_item as usize).unwrap().name.clone();
-                self.signals().wheel_end_spin().emit(reward);
-            }
+            tween.connect(
+                "finished",	// boilerplate
+                &self.to_gd().callable("end_spin").bind(&[Variant::from(reward_pos)]));
+
 
             // 360 *  speed * power
             tween.tween_property(
@@ -97,6 +84,36 @@ impl Wheel {
                 &Variant::from(reward_pos + 360 * 10 * 2),
                 3.0
             );
+        }
+    }
+
+    #[func]
+    fn end_spin(&mut self, reward_pos: i32) {
+        godot_print!("end_spin");
+        let mut front_node = self.to_gd();
+
+        let old_rotation = front_node.get_rotation_degrees();
+
+        if old_rotation > 360.0{
+            let deg = old_rotation % 360.0;
+            front_node.set_rotation_degrees(deg);
+        }
+
+        self.is_spin = false;
+
+        let mut chosen_item: i32 = -1;
+        self.items.iter().enumerate().for_each(|(i, item)| {
+            if reward_pos as f32 >= item.from && reward_pos as f32 <= item.to {
+                godot_print!("{} ", item.name);
+                chosen_item = i as i32;
+            }
+        });
+
+        if chosen_item < 0 {
+            panic!();
+        } else {
+            let reward = self.items.get(chosen_item as usize).unwrap().name.clone();
+            self.signals().wheel_end_spin().emit(reward);
         }
     }
 
@@ -148,6 +165,8 @@ impl Wheel {
 
             //godot_print!("showing name: {}", name);
         }
+
+        self.base_mut().queue_redraw();
     }
 }
 
@@ -204,12 +223,11 @@ impl IControl for Wheel {
     fn process(&mut self, _delta: f64) {
         if self.options.len() != self.items.len() {
             self.setup_labels();
-            self.base_mut().queue_redraw();
         }
     }
 
     fn ready(&mut self) {
-        let choice_label = self.chosen_item.clone();
+        let choice_label = (*self.chosen_item).clone();
 
         self.signals()
             .wheel_end_spin()

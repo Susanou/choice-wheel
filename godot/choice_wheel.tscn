@@ -13,7 +13,7 @@ grow_vertical = 2
 [node name="Wheel" type="Wheel" parent="." unique_id=1057425821]
 bg_color = Color(0.17641926, 0.17641905, 0.17641908, 1)
 inner_radius = 92
-options = Array[String](["dwadwa", "dwa", "dwadwa"])
+options = Array[String](["test3", "tes12", "test3243", "fwefewfewfwe"])
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

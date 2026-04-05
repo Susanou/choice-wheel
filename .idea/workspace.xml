@@ -12,6 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3206555c-7d37-4738-81b4-e3302acb5bf2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rust/src/selection_wheel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/selection_wheel.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -147,7 +148,8 @@
       <workItem from="1775201332535" duration="11472000" />
       <workItem from="1775292015581" duration="12927000" />
       <workItem from="1775406563608" duration="3119000" />
-      <workItem from="1775418748881" duration="314000" />
+      <workItem from="1775418748881" duration="5140000" />
+      <workItem from="1775579292507" duration="66000" />
     </task>
     <servers />
   </component>
