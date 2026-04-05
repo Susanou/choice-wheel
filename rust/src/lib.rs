@@ -9,3 +9,4 @@ unsafe impl ExtensionLibrary for MyExtension {}
 
 pub mod selection_wheel;
 pub mod ui;
+pub mod choice;

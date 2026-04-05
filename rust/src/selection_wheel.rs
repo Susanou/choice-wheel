@@ -1,12 +1,13 @@
+use crate::choice::ChoiceLabel;
 use godot::builtin::{Array, Callable, Color, GString, StringName, Vector2};
 use godot::classes::control::LayoutPreset;
 use godot::classes::{Control, IControl, ILabel, Label, Node2D, ThemeDb};
-use godot::global::HorizontalAlignment;
-use godot::meta::ref_to_arg;
-use godot::obj::{Base, Gd, Singleton, WithBaseField, WithUserSignals};
-use godot::prelude::{godot_api, GodotClass, Node};
+use godot::global::{godot_print, HorizontalAlignment};
+use godot::obj::{Base, Gd, NewAlloc, OnEditor, Singleton, WithBaseField, WithUserSignals};
+use godot::prelude::{godot_api, GodotClass, Node, OnReady, Variant};
+use rand::{random, RngExt};
+use std::any::{type_name, Any};
 use std::f32::consts::TAU;
-use godot::classes::class_macros::inherit_from_GpuParticlesAttractorVectorField3D__ensure_class_exists;
 
 const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 
@@ -33,6 +34,7 @@ pub struct Wheel {
     #[export]
     options: Array<GString>,
 
+    chosen_item: OnReady<Gd<ChoiceLabel>>,
     items: Vec<Item>
 }
 
@@ -40,6 +42,113 @@ struct Item {
     name: String,
     from: f32,
     to: f32,
+}
+
+
+#[godot_api]
+impl Wheel {
+
+    #[signal]
+    fn wheel_end_spin(choice: String);
+
+    #[func]
+    fn on_btn_spin_wheel(&mut self){
+        if !self.is_spin {
+            self.is_spin = true;
+            let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(true).done();
+            let mut front_node = self.to_gd();
+
+            tween.connect(
+                "finished",	// boilerplate
+                &Callable::from_fn(
+                    "finished",	// boilerplate
+                    move |_| {
+                        let old_rotation = front_node.get_rotation_degrees();
+
+                        if old_rotation > 360.0{
+                            let deg = old_rotation % 360.0;
+                            front_node.set_rotation_degrees(deg);
+                        }
+                    },
+                ));
+
+            let mut rng = rand::rng();
+            let reward_pos = rng.random_range(0..360);
+            let mut chosen_item: i32 = -1;
+
+            self.items.iter().enumerate().for_each(|(i, item)| {
+                if reward_pos as f32 >= item.from && reward_pos as f32 <= item.to {
+                    godot_print!("{} ", item.name);
+                    chosen_item = i as i32;
+                }
+            });
+
+            if chosen_item < 0 {
+                panic!();
+            } else {
+                let reward = self.items.get(chosen_item as usize).unwrap().name.clone();
+                self.signals().wheel_end_spin().emit(reward);
+            }
+
+            // 360 *  speed * power
+            tween.tween_property(
+                &self.to_gd(),
+                "rotation_degrees" ,
+                &Variant::from(reward_pos + 360 * 10 * 2),
+                3.0
+            );
+        }
+    }
+
+    fn setup_labels(&mut self) {
+        self.items.clear();
+
+        let outer_radius = self.outer_radius as f32;
+        let bg_color = self.bg_color;
+        let inner_radius = self.inner_radius as f32;
+        let default_font = ThemeDb::singleton().get_fallback_font();
+        let label = Label::new_alloc();
+
+        let names = self.options.clone();
+
+        for child in self.base_mut().get_children().iter_shared() {
+
+            if (child.get_name() != StringName::from("Button"))
+            {
+                Gd::free(child);
+            }
+        }
+
+        for (i, name) in names.iter_shared().enumerate() {
+
+            let mut copy_label  = Label::new_alloc();
+            copy_label.set_text(&name);
+
+            let start_rads = i as f32 / self.options.len() as f32 * TAU;
+            let end_rads = (i + 1) as f32 / self.options.len() as f32 * TAU;
+
+            self.items.push(Item{
+                name: name.to_string(),
+                from: start_rads.to_degrees(),
+                to: end_rads.to_degrees(),
+            });
+
+            let mid_rads = (start_rads + end_rads) / 2.0 * -1.0;
+            let radius_mid = (inner_radius + outer_radius) / 2.0;
+
+            let draw_pos = radius_mid * Vector2::from_angle(mid_rads);// * offset;
+
+            copy_label.set_position(draw_pos);
+            copy_label.set_rotation(mid_rads);
+            copy_label.set_horizontal_alignment(HorizontalAlignment::RIGHT);
+            let mut node = copy_label.upcast::<Node>();
+
+            self.base_mut().add_child(&node);
+            node.set_owner(&self.base().clone().upcast::<Node>());
+
+            //godot_print!("showing name: {}", name);
+        }
+    }
 }
 
 #[godot_api]
@@ -55,6 +164,7 @@ impl IControl for Wheel {
             inner_radius: 64,
             options: Array::new(),
             items: Vec::new(),
+            chosen_item: OnReady::from_node("%Choice")
         }
     }
 
@@ -92,84 +202,21 @@ impl IControl for Wheel {
     }
 
     fn process(&mut self, _delta: f64) {
-        self.setup_labels();
-        self.base_mut().queue_redraw();
+        if self.options.len() != self.items.len() {
+            self.setup_labels();
+            self.base_mut().queue_redraw();
+        }
+    }
+
+    fn ready(&mut self) {
+        let choice_label = self.chosen_item.clone();
+
+        self.signals()
+            .wheel_end_spin()
+            .connect_other(&choice_label, ChoiceLabel::on_choice);
     }
 }
 
-#[godot_api]
-impl Wheel {
-
-    #[signal]
-    fn chosen(choice: String);
-
-    fn on_btn_spin_wheel(&mut self){
-        if !self.is_spin {
-            self.is_spin = true;
-            let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(true).done();
-            tween.connect(
-                "finished".into(),	// boilerplate
-                          &Callable::from_fn(
-                              "finished",	// boilerplate
-                              |_| {
-                                  let mut old_rotation = self.base_mut().get_node_as::<Node2D>("%front").get_rotation_degrees();
-                                  self.is_spin = false;
-
-                                  if old_rotation > 360.0{
-                                      let deg = old_rotation % 360.0;
-                                      self.base_mut().get_node_as::<Node2D>("%front").set_rotation_degrees(deg);
-                                  }
-                              },
-                          ));
-        }
-    }
-
-    fn setup_labels(&mut self) {
-        self.items.clear();
-
-        let outer_radius = self.outer_radius as f32;
-        let bg_color = self.bg_color;
-        let inner_radius = self.inner_radius as f32;
-        let default_font = ThemeDb::singleton().get_fallback_font();
-
-        let names = self.options.clone();
-
-        for child in self.base_mut().get_children().iter_shared() {
-
-            if (child.get_name() != StringName::from("Choice"))
-            {
-                Gd::free(child);
-            }
-        }
-
-        for (i, name) in names.iter_shared().enumerate() {
-            let label = self.base_mut().get_node_as::<Label>("Choice");
-            let mut copy_label  = label.duplicate().unwrap().cast::<Label>();
-            copy_label.set_text(&name);
-
-            let start_rads = i as f32 / self.options.len() as f32 * TAU;
-            let end_rads = (i + 1) as f32 / self.options.len() as f32 * TAU;
-
-            self.items.push(Item{
-                name: name.to_string(),
-                from: start_rads,
-                to: end_rads,
-            });
-
-            let mid_rads = (start_rads + end_rads) / 2.0 * -1.0;
-            let radius_mid = (inner_radius + outer_radius) / 2.0;
-
-            let draw_pos = radius_mid * Vector2::from_angle(mid_rads);// * offset;
-
-            copy_label.set_position(draw_pos);
-            copy_label.set_rotation(mid_rads);
-            copy_label.set_horizontal_alignment(HorizontalAlignment::RIGHT);
-            let mut node = copy_label.upcast::<Node>();
-
-            self.base_mut().add_child(&node);
-            node.set_owner(&self.base().clone().upcast::<Node>());
-
-            //godot_print!("showing name: {}", name);
-        }
-    }
+fn type_of<T>(_: T) -> &'static str {
+    type_name::<T>()
 }
