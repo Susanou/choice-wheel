@@ -1,0 +1,388 @@
+{
+    "wheels" : [
+        {
+            "name" : "Genre de pokemon",
+            "id": 1,
+            "results": [
+                {
+                    "id": 1,
+                    "name": "Commun",
+                    "probability": 82,
+                    "next_wheel_id": 2
+                },
+                {
+                    "id": 2,
+                    "name": "Pseudo-légendaire",
+                    "probability": 9,
+                    "next_wheel_id": 3
+                },
+                {
+                    "id": 3,
+                    "name": "Légendaire",
+                    "probability": 7,
+                    "next_wheel_id": 3
+                },
+                {
+                    "id": 4,
+                    "name": "Fabuleux",
+                    "probability": 2,
+                    "next_wheel_id": 3
+                }
+            ]
+        },
+        {
+            "name": "Roulette commune",
+            "id": 2,
+            "results": [
+                {
+                    "id": 5,
+                    "name": "Starter",
+                    "probability": 20,
+                    "next_wheel_id": 4
+                },
+                {
+                    "id": 6,
+                    "name": "Fossile",
+                    "probability": 15,
+                    "next_wheel_id": 3
+                },
+                {
+                    "id": 7,
+                    "name": "Commun",
+                    "probability": 65,
+                    "next_wheel_id": 3
+                }
+            ]
+        },
+        {
+            "name": "Type",
+            "id": 3,
+            "results": [
+                {
+                    "id": 8,
+                    "name":"Acier",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 9,
+                    "name":"Combat",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 10,
+                    "name":"Dragon",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 11,
+                    "name":"Eau",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 12,
+                    "name":"Electrik",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 13,
+                    "name":"Fee",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 14,
+                    "name":"Feu",
+                    "probability": 5.56,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 15,
+                    "name":"Glace",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 16,
+                    "name":"Insecte",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 17,
+                    "name":"Normal",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 18,
+                    "name":"Plante",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 19,
+                    "name":"Poison",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 20,
+                    "name":"Psy",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 21,
+                    "name":"Roche",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 22,
+                    "name":"Sol",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 23,
+                    "name":"Spectre",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 24,
+                    "name":"Tenebres",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                },
+                {
+                    "id": 25,
+                    "name":"Vol",
+                    "probability": 5.55,
+                    "next_wheel_id": -1
+
+                }
+            ]
+        },
+        {
+            "name": "Type de starter ?",
+            "id": 4,
+            "results": [
+                {
+                    "id": 26,
+                    "name": "Eau",
+                    "probability": 33.33,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 27,
+                    "name": "Feu",
+                    "probability": 33.34,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 28,
+                    "name": "Plante",
+                    "probability": 33.33,
+                    "next_wheel_id": -1
+                }
+            ]
+        },
+        {
+            "name": "Stades d'évolution",
+            "id": 5,
+            "results": [
+                {
+                    "id": 29,
+                    "name": "0",
+                    "probability": 20,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 30,
+                    "name": "1",
+                    "probability": 45,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 31,
+                    "name": "splitté",
+                    "probability": 30,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 32,
+                    "name": "1",
+                    "probability": 5,
+                    "next_wheel_id": -1
+                }
+            ]
+        },
+        {
+            "name": "Phanères",
+            "id": 6,
+            "results": [
+                {
+                    "id": 33,
+                    "name": "Aucun, juste peau",
+                    "probability": 14.29,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 32,
+                    "name": "Ecailles",
+                    "probability": 14.28,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 33,
+                    "name": "Plumes",
+                    "probability": 14.29,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 34,
+                    "name": "Poil, cheveux ou fourrure",
+                    "probability": 14.28,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 35,
+                    "name": "Griffes, sabots",
+                    "probability": 14.29,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 36,
+                    "name": "Cornes",
+                    "probability": 14.28,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 37,
+                    "name": "Becs",
+                    "probability": 14.29,
+                    "next_wheel_id": -1
+                }
+            ]
+        },
+        {
+            "name": "namebre de paires de membres",
+            "id": 7,
+            "results": [
+                {
+                    "id": 38,
+                    "name": "0",
+                    "probability" : 16.66,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 39,
+                    "name": "2",
+                    "probability" : 16.67,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 40,
+                    "name": "4",
+                    "probability" : 16.67,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 41,
+                    "name": "6",
+                    "probability" : 16.67,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 42,
+                    "name": "8",
+                    "probability" : 16.67,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 43,
+                    "name": "plus de 8 membres",
+                    "probability" : 16.66,
+                    "next_wheel_id": -1
+                }
+            ]
+        },
+        {
+            "name": "type de paire de membres",
+            "id": 8,
+            "results": [
+                {
+                    "id": 44,
+                    "name": "Bras",
+                    "probability": 33.33,
+                    "next_wheel_id": "Bout des bras"
+                },
+                {
+                    "id": 45,
+                    "name": "Jambes",
+                    "probability": 33.33,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 46,
+                    "name": "Ailes",
+                    "probability": 33.34,
+                    "next_wheel_id": -1
+                }
+            ]
+        },
+        {
+            "name": "appendices digitaux",
+            "id": 9,
+            "results": [
+                {
+                    "id": 47,
+                    "name": "Mains",
+                    "probability": 0,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 48,
+                    "name": "Griffes",
+                    "probability": 0,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 49,
+                    "name": "Faucilles",
+                    "probability": 0,
+                    "next_wheel_id": -1
+                },
+                {
+                    "id": 50,
+                    "name": "Pinces",
+                    "probability": 0,
+                    "next_wheel_id": -1
+                }
+            ]
+        }
+    ]
+}

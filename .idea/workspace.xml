@@ -13,6 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3206555c-7d37-4738-81b4-e3302acb5bf2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/godot/choice_wheel.tscn" beforeDir="false" afterPath="$PROJECT_DIR$/godot/choice_wheel.tscn" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rust/src/selection_wheel.rs" beforeDir="false" afterPath="$PROJECT_DIR$/rust/src/selection_wheel.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -77,7 +78,7 @@
       <recent name="C:\Users\camer\Documents\Github\choice-wheel" />
     </key>
   </component>
-  <component name="RunManager" selected="Shell Script.godot">
+  <component name="RunManager" selected="Cargo.Test ChoiceWheel">
     <configuration name="Test ChoiceWheel" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="buildProfileId" value="test" />
       <option name="command" value="test --workspace" />
@@ -150,6 +151,9 @@
       <workItem from="1775406563608" duration="3119000" />
       <workItem from="1775418748881" duration="5140000" />
       <workItem from="1775579292507" duration="66000" />
+      <workItem from="1777741937063" duration="2465000" />
+      <workItem from="1778572919645" duration="4469000" />
+      <workItem from="1778615697854" duration="2692000" />
     </task>
     <servers />
   </component>

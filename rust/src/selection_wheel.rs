@@ -2,13 +2,15 @@ use crate::choice::ChoiceLabel;
 use godot::builtin::{Array, Callable, Color, GString, StringName, Vector2};
 use godot::classes::control::LayoutPreset;
 use godot::classes::{Control, IControl, ILabel, Label, Node2D, ThemeDb};
-use godot::global::{godot_print, HorizontalAlignment};
+use godot::global::{godot_error, godot_print, HorizontalAlignment};
 use godot::obj::{Base, Gd, NewAlloc, OnEditor, Singleton, WithBaseField, WithUserSignals};
-use godot::prelude::{godot_api, GodotClass, Node, OnReady, Variant};
+use godot::prelude::{godot_api, GFile, GodotClass, Node, OnReady, Variant};
 use rand::{random, RngExt};
 use std::any::{type_name, Any};
 use std::f32::consts::TAU;
 use std::fs;
+use godot::classes::file_access::ModeFlags;
+use serde::{Deserialize, Deserializer, Serialize};
 
 const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 
@@ -32,16 +34,36 @@ pub struct Wheel {
     #[export]
     inner_radius: i64,
 
-    #[export]
-    options: Array<GString>,
-
     chosen_item: OnReady<Gd<ChoiceLabel>>,
-    items: Vec<Item>
+    items: Vec<WheelItem>
 }
 
 struct Item {
     name: String,
     from: f32,
+    to: f32,
+
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WheelChoice {
+    pub name: String,
+    pub id: i64,
+    pub results: Vec<WheelItem>,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WheelItem {
+    pub id: i64,
+    pub name: String,
+    pub probability: f64,
+    #[serde(rename = "next_wheel_id")]
+    pub next_wheel_id: i32,
+    #[serde(default)]
+    from: f32,
+    #[serde(default)]
     to: f32,
 }
 
@@ -53,12 +75,23 @@ impl Wheel {
     fn wheel_end_spin(choice: String);
 
     #[func]
-    fn load_file(&mut self, path: String){
-        let file = fs::File::open(path).expect("file should open read only");
+    fn on_btn_load_file(&mut self){
+        godot_print!("{:?}", self.items.len());
+        // Open file in read mode
+        let my_file = GFile::open("res://roulette.json", ModeFlags::READ);
+
+        let file = fs::File::open(my_file.unwrap().path_absolute().to_string()).expect("file should open read only");
         let json: serde_json::Value = serde_json::from_reader(file)
             .expect("file should be proper JSON");
 
+        godot_print!("{}", json["wheels"][0]);
 
+        let first_wheel: WheelChoice = serde_json::from_value(json["wheels"][0].clone()).unwrap();
+        self.items = first_wheel.results;
+        godot_print!("{:?}", self.items);
+        godot_print!("{:?}", self.items.len());
+
+        self.setup_labels();
     }
 
     #[func]
@@ -90,6 +123,7 @@ impl Wheel {
     #[func]
     fn end_spin(&mut self, reward_pos: i32) {
         godot_print!("end_spin");
+        godot_print!("{:?}", self.items);
         let mut front_node = self.to_gd();
 
         let old_rotation = front_node.get_rotation_degrees();
@@ -118,15 +152,13 @@ impl Wheel {
     }
 
     fn setup_labels(&mut self) {
-        self.items.clear();
-
         let outer_radius = self.outer_radius as f32;
         let bg_color = self.bg_color;
         let inner_radius = self.inner_radius as f32;
         let default_font = ThemeDb::singleton().get_fallback_font();
         let label = Label::new_alloc();
 
-        let names = self.options.clone();
+        let mut options = self.items.clone();
 
         for child in self.base_mut().get_children().iter_shared() {
 
@@ -136,19 +168,18 @@ impl Wheel {
             }
         }
 
-        for (i, name) in names.iter_shared().enumerate() {
+        let mut updated_items : Vec<WheelItem> = vec!();
+
+        for (i, name) in options.iter_mut().enumerate() {
 
             let mut copy_label  = Label::new_alloc();
-            copy_label.set_text(&name);
+            copy_label.set_text(&name.name);
 
-            let start_rads = i as f32 / self.options.len() as f32 * TAU;
-            let end_rads = (i + 1) as f32 / self.options.len() as f32 * TAU;
+            let start_rads = i as f32 / self.items.len() as f32 * TAU;
+            let end_rads = (i + 1) as f32 / self.items.len() as f32 * TAU;
 
-            self.items.push(Item{
-                name: name.to_string(),
-                from: start_rads.to_degrees(),
-                to: end_rads.to_degrees(),
-            });
+            name.from = start_rads.to_degrees();
+            name.to = end_rads.to_degrees();
 
             let mid_rads = (start_rads + end_rads) / 2.0 * -1.0;
             let radius_mid = (inner_radius + outer_radius) / 2.0;
@@ -163,9 +194,12 @@ impl Wheel {
             self.base_mut().add_child(&node);
             node.set_owner(&self.base().clone().upcast::<Node>());
 
+            updated_items.push(name.clone());
+
             //godot_print!("showing name: {}", name);
         }
 
+        self.items = updated_items;
         self.base_mut().queue_redraw();
     }
 }
@@ -181,7 +215,6 @@ impl IControl for Wheel {
             line_width: 4,
             outer_radius: 256,
             inner_radius: 64,
-            options: Array::new(),
             items: Vec::new(),
             chosen_item: OnReady::from_node("%Choice")
         }
@@ -205,11 +238,11 @@ impl IControl for Wheel {
             .antialiased(true)
             .done();
 
-        let names = self.options.clone();
+        let mut items = self.items.clone();
 
-        if self.options.len() >= 2 {
-            for (i, _name) in names.iter_shared().enumerate() {
-                let rads = i as f32 / self.options.len() as f32 * TAU;
+        if self.items.len() >= 2 {
+            for (i, _name) in items.iter_mut().enumerate() {
+                let rads = i as f32 / self.items.len() as f32 * TAU;
                 let point = Vector2::from_angle(rads);
                 self.base_mut()
                     .draw_line_ex(point * inner_radius, point * outer_radius, line_color)
@@ -221,9 +254,6 @@ impl IControl for Wheel {
     }
 
     fn process(&mut self, _delta: f64) {
-        if self.options.len() != self.items.len() {
-            self.setup_labels();
-        }
     }
 
     fn ready(&mut self) {
