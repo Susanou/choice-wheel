@@ -338,7 +338,7 @@
                     "id": 44,
                     "name": "Bras",
                     "probability": 33.33,
-                    "next_wheel_id": "Bout des bras"
+                    "next_wheel_id": -1
                 },
                 {
                     "id": 45,

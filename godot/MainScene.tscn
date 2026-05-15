@@ -6,9 +6,4 @@
 
 [node name="Ui" type="Ui" parent="." unique_id=1596065000]
 
-[node name="Label" type="Label" parent="Ui" unique_id=927597834]
-offset_right = 119.0
-offset_bottom = 23.0
-text = "Choice Wheel []"
-
 [node name="ChoiceWheel" parent="Ui" unique_id=2090212538 instance=ExtResource("1_3mqji")]

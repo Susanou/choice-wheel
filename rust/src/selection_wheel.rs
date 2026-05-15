@@ -31,15 +31,23 @@ pub struct Wheel {
     #[export]
     inner_radius: i64,
 
+    pub next_wheel_id: i32,
+    pub possible_wheels: Option<Root>,
     pub chosen_item: OnReady<Gd<ChoiceLabel>>,
     items: Vec<WheelItem>
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct Root {
+    pub wheels: Vec<WheelChoice>
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct WheelChoice {
     pub name: String,
-    pub id: i64,
+    pub id: i32,
     pub results: Vec<WheelItem>,
 }
 
@@ -72,12 +80,13 @@ impl Wheel {
         let my_file = GFile::open("res://roulette.json", ModeFlags::READ);
 
         let file = fs::File::open(my_file.unwrap().path_absolute().to_string()).expect("file should open read only");
-        let json: serde_json::Value = serde_json::from_reader(file)
+        let json: Root = serde_json::from_reader(file)
             .expect("file should be proper JSON");
 
-        godot_print!("{}", json["wheels"][0]);
+        self.possible_wheels = Option::from(json);
+        godot_print!("{:?}", self.possible_wheels.as_ref().unwrap().wheels.get(0).unwrap());
 
-        let first_wheel: WheelChoice = serde_json::from_value(json["wheels"][0].clone()).unwrap();
+        let first_wheel: WheelChoice = self.possible_wheels.as_ref().unwrap().wheels.get(0).unwrap().clone();
         self.items = first_wheel.results;
         godot_print!("{:?}", self.items);
         godot_print!("{:?}", self.items.len());
@@ -90,7 +99,7 @@ impl Wheel {
         if !self.is_spin {
             self.is_spin = true;
 
-            let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(true).done();
+            let mut tween = self.base_mut().get_tree().create_tween().set_parallel_ex().parallel(false).done();
 
             let mut rng = rand::rng();
             let reward_pos = rng.random_range(0..360);
@@ -112,9 +121,19 @@ impl Wheel {
     }
 
     #[func]
+    fn on_load_next_wheel(&mut self){
+        if self.next_wheel_id != -1 {
+            let next_wheel_pos = self.possible_wheels.as_ref().unwrap().wheels.iter().position(|x| x.id == self.next_wheel_id).unwrap();
+            self.items = self.possible_wheels.as_ref().unwrap().wheels[next_wheel_pos].results.clone();
+            self.setup_labels();
+        } else {
+            self.signals().wheel_end_spin().emit("END".to_string());
+        }
+    }
+
+    #[func]
     fn end_spin(&mut self, reward_pos: i32) {
         godot_print!("end_spin");
-        godot_print!("{:?}", self.items);
         let mut front_node = self.to_gd();
 
         let old_rotation = front_node.get_rotation_degrees();
@@ -137,8 +156,11 @@ impl Wheel {
         if chosen_item < 0 {
             panic!();
         } else {
-            let reward = self.items.get(chosen_item as usize).unwrap().name.clone();
+            let item = self.items.get(chosen_item as usize).unwrap().clone();
+            let reward = item.name.clone();
             self.signals().wheel_end_spin().emit(reward);
+
+            self.next_wheel_id = item.next_wheel_id;
         }
     }
 
@@ -204,6 +226,8 @@ impl IControl for Wheel {
             outer_radius: 256,
             inner_radius: 64,
             items: Vec::new(),
+            next_wheel_id: -1,
+            possible_wheels: None,
             chosen_item: OnReady::from_node("%Choice")
         }
     }
@@ -238,6 +262,8 @@ impl IControl for Wheel {
                     .done();
             }
         }
+
+        godot_print!("Draw was called");
     }
 
     fn process(&mut self, _delta: f64) {
