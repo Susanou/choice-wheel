@@ -1,18 +1,15 @@
 use crate::choice::ChoiceLabel;
-use godot::builtin::{Array, Callable, Color, GString, StringName, Vector2};
+use godot::builtin::{Color, StringName, Vector2};
 use godot::classes::control::LayoutPreset;
-use godot::classes::{Control, IControl, ILabel, Label, Node2D, ThemeDb};
-use godot::global::{godot_error, godot_print, HorizontalAlignment};
-use godot::obj::{Base, Gd, NewAlloc, OnEditor, Singleton, WithBaseField, WithUserSignals};
+use godot::classes::file_access::ModeFlags;
+use godot::classes::{Control, IControl, Label};
+use godot::global::{godot_print, HorizontalAlignment};
+use godot::obj::{Base, Gd, NewAlloc, WithBaseField, WithUserSignals};
 use godot::prelude::{godot_api, GFile, GodotClass, Node, OnReady, Variant};
-use rand::{random, RngExt};
-use std::any::{type_name, Any};
+use rand::RngExt;
+use serde::{Deserialize, Serialize};
 use std::f32::consts::TAU;
 use std::fs;
-use godot::classes::file_access::ModeFlags;
-use serde::{Deserialize, Deserializer, Serialize};
-
-const SPRITE_SIZE: Vector2 = Vector2{x: 32.0, y: 32.0};
 
 #[derive(GodotClass)]
 #[class(base=Control, tool)]
@@ -34,15 +31,8 @@ pub struct Wheel {
     #[export]
     inner_radius: i64,
 
-    chosen_item: OnReady<Gd<ChoiceLabel>>,
+    pub chosen_item: OnReady<Gd<ChoiceLabel>>,
     items: Vec<WheelItem>
-}
-
-struct Item {
-    name: String,
-    from: f32,
-    to: f32,
-
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -76,6 +66,7 @@ impl Wheel {
 
     #[func]
     fn on_btn_load_file(&mut self){
+        self.chosen_item.call("on_clear_choices", &[]);
         godot_print!("{:?}", self.items.len());
         // Open file in read mode
         let my_file = GFile::open("res://roulette.json", ModeFlags::READ);
@@ -153,16 +144,13 @@ impl Wheel {
 
     fn setup_labels(&mut self) {
         let outer_radius = self.outer_radius as f32;
-        let bg_color = self.bg_color;
         let inner_radius = self.inner_radius as f32;
-        let default_font = ThemeDb::singleton().get_fallback_font();
-        let label = Label::new_alloc();
 
         let mut options = self.items.clone();
 
         for child in self.base_mut().get_children().iter_shared() {
 
-            if (child.get_name() != StringName::from("Button"))
+            if child.get_name() != StringName::from("Button")
             {
                 Gd::free(child);
             }
@@ -226,7 +214,6 @@ impl IControl for Wheel {
         let inner_radius = self.inner_radius as f32;
         let line_color = self.line_color;
         let line_width = self.line_width as f32;
-        let default_font = ThemeDb::singleton().get_fallback_font();
 
         self.base_mut().set_anchors_preset(LayoutPreset::FULL_RECT);
 
@@ -263,8 +250,4 @@ impl IControl for Wheel {
             .wheel_end_spin()
             .connect_other(&choice_label, ChoiceLabel::on_choice);
     }
-}
-
-fn type_of<T>(_: T) -> &'static str {
-    type_name::<T>()
 }
